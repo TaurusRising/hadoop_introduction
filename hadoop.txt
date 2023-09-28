@@ -1,0 +1,66 @@
+C:\Users\isaev>docker ps
+CONTAINER ID   IMAGE                                                    COMMAND                  CREATED      STATUS                            PORTS                                          NAMES
+42754aebd69d   gethue/hue:4.6.0                                         "./startup.sh"           3 days ago   Up 8 seconds                      0.0.0.0:8888->8888/tcp                         docker-hadoop-hive-parquet-hue-1
+2e5d754169da   bde2020/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8   "/entrypoint.sh /run…"   3 days ago   Up 8 seconds (health: starting)   8088/tcp                                       docker-hadoop-hive-parquet-resourcemanager-1
+b973eadd989b   bde2020/hadoop-datanode:2.0.0-hadoop2.7.4-java8          "/entrypoint.sh /run…"   3 days ago   Up 9 seconds (health: starting)   0.0.0.0:50075->50075/tcp                       docker-hadoop-hive-parquet-datanode-1
+991977f7e411   postgres:12.1-alpine                                     "docker-entrypoint.s…"   3 days ago   Up 9 seconds                      0.0.0.0:7876->5432/tcp                         docker-hadoop-hive-parquet-huedb-1
+4a3464d1cd99   bde2020/hive-metastore-postgresql:2.3.0                  "/docker-entrypoint.…"   3 days ago   Up 9 seconds                      0.0.0.0:5432->5432/tcp                         docker-hadoop-hive-parquet-hive-metastore-postgresql-1
+f3f091683e4b   bde2020/hive:2.3.2-postgresql-metastore                  "entrypoint.sh /bin/…"   3 days ago   Up 9 seconds                      0.0.0.0:10000->10000/tcp, 10002/tcp            docker-hadoop-hive-parquet-hive-server-1
+176772db94d7   bde2020/hive:2.3.2-postgresql-metastore                  "entrypoint.sh /opt/…"   3 days ago   Up 9 seconds                      10000/tcp, 0.0.0.0:9083->9083/tcp, 10002/tcp   docker-hadoop-hive-parquet-hive-metastore-1
+97b08fadce86   bde2020/hadoop-namenode:2.0.0-hadoop2.7.4-java8          "/entrypoint.sh /run…"   3 days ago   Up 9 seconds (health: starting)   0.0.0.0:50070->50070/tcp                       docker-hadoop-hive-parquet-namenode-1
+
+C:\Users\isaev>docker exec -it b973eadd989b bash
+root@b973eadd989b:/# ls
+bin  boot  dev  entrypoint.sh  etc  hadoop  hadoop-data  home  lib  lib64  media  mnt  opt  proc  root  run  run.sh  sbin  srv  sys  tmp  usr  var  wap
+root@b973eadd989b:/# mkdir warandpeace
+root@b973eadd989b:/# ls
+bin  boot  dev  entrypoint.sh  etc  hadoop  hadoop-data  home  lib  lib64  media  mnt  opt  proc  root  run  run.sh  sbin  srv  sys  tmp  usr  var  wap  warandpeace
+root@b973eadd989b:/# exit
+exit
+
+C:\Users\isaev>docker cp D:/warandpeace/voyna-i-mir-tom-1.docx b973eadd989b:/warandpeace/
+Successfully copied 558kB to b973eadd989b:/warandpeace/
+
+C:\Users\isaev>docker cp D:/warandpeace/voyna-i-mir-tom-2.docx b973eadd989b:/warandpeace/
+Successfully copied 574kB to b973eadd989b:/warandpeace/
+
+C:\Users\isaev>docker cp D:/warandpeace/voyna-i-mir-tom-3.docx b973eadd989b:/warandpeace/
+Successfully copied 668kB to b973eadd989b:/warandpeace/
+
+C:\Users\isaev>docker cp D:/warandpeace/voyna-i-mir-tom-4.docx b973eadd989b:/warandpeace/
+Successfully copied 497kB to b973eadd989b:/warandpeace/
+
+C:\Users\isaev>docker exec -it b973eadd989b bash
+root@b973eadd989b:/# ls
+bin  boot  dev  entrypoint.sh  etc  hadoop  hadoop-data  home  lib  lib64  media  mnt  opt  proc  root  run  run.sh  sbin  srv  sys  tmp  usr  var  wap  warandpeace
+root@b973eadd989b:/# ls warandpeace
+voyna-i-mir-tom-1.docx  voyna-i-mir-tom-2.docx  voyna-i-mir-tom-3.docx  voyna-i-mir-tom-4.docx
+root@b973eadd989b:/# cat voyna-i-mir-tom-1.docx voyna-i-mir-tom-2.docx voyna-i-mir-tom-3.docx voyna-i-mir-tom-4.docx > voyna-i-mir.docx
+voyna-i-mir-tom-1.docx  voyna-i-mir-tom-2.docx  voyna-i-mir-tom-3.docx  voyna-i-mir-tom-4.docx  voyna-i-mir.docx
+root@b973eadd989b:/# rm warandpeace/voyna-i-mir-tom-1.docx
+root@b973eadd989b:/# rm warandpeace/voyna-i-mir-tom-2.docx
+root@b973eadd989b:/# rm warandpeace/voyna-i-mir-tom-3.docx
+root@b973eadd989b:/# rm warandpeace/voyna-i-mir-tom-4.docx
+root@b973eadd989b:/# ls warandpeace
+voyna-i-mir.docx
+root@b973eadd989b:/# hdfs dfs -copyFromLocal warandpeace/voyna-i-mir.docx /user/1tuser447
+root@b973eadd989b:/# hadoop fs -ls /user/1tuser447
+Found 1 items
+-rw-r--r--   3 root 1tuser447    1679015 2023-09-28 14:28 /user/1tuser447/voyna-i-mir.docx
+root@b973eadd989b:/# hadoop fs -chmod 755 /user/1tuser447/voyna-i-mir.docx
+root@b973eadd989b:/# hadoop fs -ls /user/1tuser447
+Found 1 items
+-rwxr-xr-x   3 root 1tuser447    1679015 2023-09-28 14:28 /user/1tuser447/voyna-i-mir.docx
+root@b973eadd989b:/# hadoop fs -du /user/1tuser447/voyna-i-mir.docx
+1679015  /user/1tuser447/voyna-i-mir.docx
+root@b973eadd989b:/# hadoop fs -setrep -w 2 /user/1tuser447/voyna-i-mir.docx
+Replication 2 set: /user/1tuser447/voyna-i-mir.docx
+Waiting for /user/1tuser447/voyna-i-mir.docx
+root@b973eadd989b:/# hadoop fs -cat /user/1tuser447/voyna-i-mir.docx | wc -l
+6339
+
+
+
+
+
+
